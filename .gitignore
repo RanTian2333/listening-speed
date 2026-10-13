@@ -1,0 +1,15 @@
+.build_deps/
+build/
+bin/
+__pycache__/
+*.spec
+tests/output/
+dist/
+release*/
+*.zip
+界面预览.jpg
+界面预览2.0.jpg
+界面预览2.1.jpg
+使用说明.md
+使用说明2.0.md
+使用说明2.1.md

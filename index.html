@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>听力调速 · 实时试听工作台</title>
+<link rel="stylesheet" href="/style.css?token=__TOKEN__">
+<link rel="stylesheet" href="/extra.css?token=__TOKEN__">
+</head>
+<body>
+<header><div class="brand"><div class="logo" aria-hidden="true">≋</div><div><strong>听力调速</strong><div class="tag">2.2 · 音频工作台</div></div></div><div class="private"><i class="dot"></i>本地处理 · 实时试听</div></header>
+<main>
+<div class="grid">
+<section class="card">
+ <div class="card-title"><span class="step">01</span><h2>添加与试听</h2><button class="text-button" id="add" style="margin-left:auto">＋ 添加文件</button></div>
+ <div class="drop" id="drop" role="button" tabindex="0" aria-label="选择或拖入音频或视频"><div class="upload-icon" aria-hidden="true">↥</div><strong>拖入一个或多个音频 / 视频</strong><p>MP3 / WAV / MP4 等 · 每个文件最大 1 GB</p><button class="btn small" id="choose">选择文件（可多选）</button></div>
+ <input id="file" type="file" multiple accept="audio/*,video/*,.mp3,.wav,.m4a,.aac,.flac,.ogg,.wma,.mp4,.mov,.mkv,.webm,.avi" hidden>
+ <div class="file" id="fileCard" hidden><div class="file-icon" aria-hidden="true">♫</div><div class="file-info"><div class="filename" id="filename"></div><p id="filemeta"></p></div><button class="text-button" id="change">移除</button></div>
+ <div id="queue" class="queue" hidden><div class="queue-heading"><strong id="queueCount"></strong><button id="clear" class="text-button">清空列表</button></div><div id="queueList"></div></div>
+ <div class="audio-area"><div class="player-label"><span style="align-self:center">试听工作台</span></div>
+ <div class="track-tools"><div class="zoom-control"><strong>轨道缩放</strong><button id="zoomOut" aria-label="缩小轨道">−</button><select id="zoom" aria-label="轨道显示范围"><option value="1">显示全段</option><option value="2">显示 1/2 段</option><option value="4">显示 1/4 段</option><option value="8">显示 1/8 段</option><option value="16">显示 1/16 段</option></select><button id="zoomIn" aria-label="放大轨道">＋</button></div><button id="follow" class="text-button" aria-pressed="true">✓ 跟随播放</button></div>
+ <div class="wave-wrap"><canvas id="wave" tabindex="0" aria-label="音频轨道：点击或拖动定位，上方原音频，下方调整后"></canvas><div class="empty-wave" id="emptyWave">添加文件后显示轨道</div></div>
+ <input id="pan" class="seek pan" type="range" min="0" max="1000" value="0" aria-label="轨道视野位置" hidden>
+ <div class="track-legend"><span><i class="key gap-key"></i>停顿</span><span><i class="key cut-key"></i>比原停顿缩短</span><span><i class="key add-key"></i>比原停顿增加</span></div>
+ <div id="waveHint" class="notice">点击轨道定位</div>
+ <input id="seek" class="seek" type="range" min="0" max="1000" value="0" aria-label="播放进度" disabled>
+ <div class="transport"><button class="round" id="back" aria-label="后退5秒" disabled>−5</button><button class="round play" id="play" aria-label="播放" disabled>▶</button><button class="round" id="forward" aria-label="前进5秒" disabled>+5</button><span class="time" id="time">00:00 / 00:00</span><label class="volume">音量 <input id="volume" type="range" min="0" max="1" step="0.01" value="0.8" aria-label="音量"></label></div>
+ <div class="now-gap" id="nowGap" hidden></div>
+ </div>
+ <div class="status" id="status" role="status" aria-live="polite">请选择文件</div>
+ <details class="gap-details" id="gapDetails"><summary><strong>停顿明细</strong><span id="gapCount">0 处</span><span class="expand-label">展开查看</span></summary><p class="notice">与原停顿比较 · 点击定位 · 取消勾选排除</p><div id="gapList" class="gap-list"></div></details>
+ <details class="help"><summary>使用小提示</summary><p>点击 ▶ 播放，边听边调整。开启“停顿不随语速变化”，讲话加快，停顿仍保留原秒数；也可单独按倍数或秒数调整停顿。颜色始终与原停顿秒数比较。空格播放或暂停，方向键前后移动 5 秒。</p><p>识别至少 1.2 秒、低于 −42 dB 的中间停顿。有背景音乐可能识别不到；轻声可能被误判，可在停顿列表排除。初次添加需要读取和分析，之后试听不需要整段导出。导出与试听使用同样的时间规则，但浏览器与导出采用不同的保音调算法，音色和边界可能有细微差别。</p></details>
+</section>
+<section class="card">
+ <div class="card-title"><span class="step">02</span><h2>语速与停顿</h2><button class="text-button" id="reset" style="margin-left:auto">重置</button></div>
+ <div class="speed-value"><strong id="speedValue">1.25<span>倍</span></strong><span class="pill">保持音调</span></div>
+ <input id="speed" class="slider" type="range" min="0.5" max="2" step="0.05" value="1.25" aria-label="语速倍速">
+ <div class="scale"><span>0.5× 慢一点</span><span>1.0×</span><span>2.0× 快一点</span></div>
+ <div class="presets" id="presets"><button data-speed="0.75">0.75×</button><button data-speed="1">1.0×</button><button data-speed="1.25" class="active">1.25×</button><button data-speed="1.5">1.5×</button><button data-speed="2">2.0×</button></div>
+ <div class="pause-box"><div class="toggle-row"><strong>停顿不随语速变化</strong><label class="switch"><input id="pauseToggle" type="checkbox" aria-label="停顿不随语速变化"></label></div><p id="pauseSummary">关闭：讲话和停顿一起变速。开启：停顿单独控制。</p>
+ <div id="pauseControls" hidden>
+ <label class="pause-mode-label">停顿怎么处理 <select id="pauseMode" aria-label="停顿调整方式"><option value="keep">保持原秒数</option><option value="ratio">按原停顿的倍数</option><option value="fixed">每处设为固定秒数</option><option value="cap">只限制最长停顿</option></select></label>
+ <div class="cap-control" id="valueControls"><div class="cap-label"><label id="pauseValueLabel" for="pauseValue">停顿时长倍数</label><div class="number-unit"><input id="pauseValue" type="number" min="0" max="20" step="0.1" value="1" aria-label="停顿数值"><span id="pauseUnit">倍</span></div></div><input id="pauseSlider" class="slider" type="range" min="0" max="20" step="0.1" value="1" aria-label="停顿数值滑块"><div class="presets gap-presets" id="gapPresets"></div><div id="pauseHelp" class="notice">1 倍保留原停顿秒数，不随语速缩短；2 倍留出双倍思考时间。</div></div>
+ </div>
+ <div class="notice" id="gapNotice">关闭时，停顿随整段音频一起变速。</div></div>
+ <div class="stats"><div><div class="stat-label">原音频时长</div><div class="stat-value" id="before">--:--</div></div><div><div class="stat-label">调整后时长</div><div class="stat-value green" id="after">--:--</div></div></div>
+ <div id="delta" class="notice duration-delta"></div>
+ <div class="export"><div class="export-line"><select id="format" aria-label="导出格式"><option value="mp3">MP3</option><option value="wav">WAV</option></select><button id="export" class="btn" disabled>↓ 导出当前音频</button></div><button id="batchExport" class="btn secondary batch-export" disabled>导出全部（ZIP）</button><p id="batchHint">全部文件使用右侧设置，停顿排除按各文件保留。</p><div id="exportStatus" class="notice" role="status" aria-live="polite"></div></div>
+</section>
+</div>
+<footer class="footer"><span>本地处理 · 仅导出音频</span><button class="text-button" id="quit">退出软件</button></footer>
+</main>
+<audio id="audio" preload="auto"></audio>
+<script>const TOKEN='__TOKEN__';</script>
+<script src="/timeline.js?token=__TOKEN__"></script>
+<script src="/player.js?token=__TOKEN__"></script>
+<script src="/ui.js?token=__TOKEN__"></script>
+</body>
+</html>
